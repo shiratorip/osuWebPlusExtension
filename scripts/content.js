@@ -88,7 +88,9 @@ function checkForElements() {
         score_data_wrapper.className = 'score-data-wrapper';
         
         while(group.firstChild){
-            if(group.firstChild.className == 'js-score-pin-sortable-handle hidden-xs sortable-handle sortable-handle--score-pin ui-sortable-handle'){
+            if(group.firstChild.className == 'js-score-pin-sortable-handle hidden-xs sortable-handle sortable-handle--score-pin ui-sortable-handle' ||
+            group.firstChild.className == 'js-score-pin-sortable-handle hidden-xs sortable-handle sortable-handle--score-pin'
+            ){
                 playercontainer.appendChild(group.firstChild);
                 continue;
             }

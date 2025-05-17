@@ -25,6 +25,10 @@ styleElement.textContent = `
             transition: all 120ms ease-in-out;
             background-color: var(--background-extra-dark);
         }
+        .play-detail--pin-sortable .beatmapset-panel__play-container {
+            margin-left: 20px;
+            width: 70px;
+        }
 `;
 
 function checkForElements() {
@@ -109,9 +113,18 @@ function checkForElements() {
 
         const beatmapset_panel_content = document.createElement('div');
         beatmapset_panel_content.className = 'beatmapset-panel__content';
-
+        beatmapset_panel_content.style = `
+            display: flex;
+            flex-direction: column;
+            justify-content: left;
+            position: absolute;
+            z-index: 2;
+            height: 100%;
+            width: 100%;
+        `;
         const beatmapset_panel_play_container = document.createElement('div');
         beatmapset_panel_play_container.className = 'beatmapset-panel__play-container';
+        beatmapset_panel_play_container.style.height="100%";
         
         const beatmapset_panel_play = document.createElement('button');
         beatmapset_panel_play.className = 'beatmapset-panel__play js-audio--play';

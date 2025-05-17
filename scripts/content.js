@@ -10,6 +10,21 @@ styleElement.textContent = `
             max-height: 60px;
         }
     }
+        .score-data-wrapper{
+            border-radius: 9px;
+            flex: 1;
+            margin-right: 10px;
+            padding-left: 10px;
+            display: flex;
+            justify-content: space-between;
+            height: 100%;
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: calc(100% - var(--play-width));
+            transition: all 120ms ease-in-out;
+            background-color: var(--background-extra-dark);
+        }
 `;
 
 function checkForElements() {
@@ -20,14 +35,16 @@ function checkForElements() {
             return;
         }
         const group = score.closest('.play-detail.play-detail--highlightable');
-        const children = Array.from(group.children);
 
         group.style.height = '80px';
+        group.style = `
+            height:80px;
+        `;
 
  //get beatmap id
         const titleElement = score.querySelector(".play-detail__title.u-ellipsis-overflow");
         const bId = titleElement ? titleElement.getAttribute('href').match(/beatmapsets\/(\d+)/)[1] : 'error fetching id';
-
+//add main container(for player+score data)
         const playercontainer = document.createElement('div');
         playercontainer.className = 'beatmapset-panel beatmapset-panel--size-normal js-audio--player';
         playercontainer.setAttribute('data-audio-url', "//b.ppy.sh/preview/"+bId+".mp3");
@@ -36,13 +53,13 @@ function checkForElements() {
             --duration: '0:10';
             --current-time: '0:00';
             --progress: 0;
-            margin-left:20px;
             width: 100%;
             position: relative;
             display: flex;
             flex-direction: row;
             transition: all 120ms ease-in-out;
-                height:100%;
+            height:100%;
+            background-color: hsla(0,0%,0%,0);
         `;
         playercontainer.setAttribute('data-audio-has-duration', 1);
         playercontainer.setAttribute('data-audio-state', "paused");
@@ -59,9 +76,9 @@ function checkForElements() {
             height: 100%;
             left: 0;
             pointer-events: var(--global-beatmap-link-pointer-events);
-            position: absolute;
-            top: 0;
-            width: 100%;
+            position: relative;
+            top: 0;            
+            width: calc(100%-20px);
         `;
         beatmapset_panel_cover_container.className = 'beatmapset-panel__cover-container';
         beatmapset_panel_cover_container.href = "https://osu.ppy.sh/beatmapsets/"+bId;
@@ -72,28 +89,13 @@ function checkForElements() {
         
         while(group.firstChild){
             if(group.firstChild.className == 'js-score-pin-sortable-handle hidden-xs sortable-handle sortable-handle--score-pin ui-sortable-handle'){
-                beatmapset_panel_cover_container.appendChild(group.firstChild);
+                playercontainer.appendChild(group.firstChild);
                 continue;
             }
             score_data_wrapper.appendChild(group.firstChild);
         }
 
-        score_data_wrapper.style = `
-            border-radius: 9px;
-            flex: 1;
-            margin-right: 10px;
-            padding-left: 10px;
-            display: flex;
-            justify-content: space-between;
-            height: 100%;
-            position: absolute;
-            right: 0;
-            top: 0;
-            width: calc(100% - var(--play-width));
-            transition: all 120ms ease-in-out;
-            background-color: var(--background-extra-dark);
-        `;
-
+    
         const beatmapset_panel_cover_col_play = document.createElement('div');
         beatmapset_panel_cover_col_play.className = 'beatmapset-panel__cover-col beatmapset-panel__cover-col--play';
 

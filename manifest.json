@@ -1,0 +1,20 @@
+{
+    "name": "Osu score preview play",
+    "description": "Add preview play button to osu scores on your page",
+    "version": "1.0",
+    "manifest_version": 3,
+    "action": {
+      "default_icon": "images/icon.png",
+      "default_script": "scripts/content.js"
+    },
+      "content_scripts": [
+        {
+          "js": ["scripts/content.js"],
+          "matches": [
+            "https://osu.ppy.sh/users/*"
+            
+          ]
+        }
+      ]
+    
+  }

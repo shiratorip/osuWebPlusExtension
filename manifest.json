@@ -3,8 +3,12 @@
   "description": "Add preview play button to osu scores on your page",
   "version": "1.0",
   "manifest_version": 3,
-  "action": {
-    "default_icon": "images/icon.png"
+  "author": "shiratorip",
+  "icons": {
+    "16": "images/icon-16.png",
+    "32": "images/icon-32.png",
+    "64": "images/icon-64.png",
+    "128": "images/icon-128.png"
   },
   "content_scripts": [
     {

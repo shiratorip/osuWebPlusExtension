@@ -1,5 +1,10 @@
-// Keep track of processed elements
-const processedElements = new Set();
+
+addEventListener("load", (event) => {
+    console.log(event)
+    });
+  
+  // Keep track of processed elements
+  const processedElements = new Set();
 
 // Add a style element for media queries
 const styleElement = document.createElement('style');
@@ -190,5 +195,11 @@ observer.observe(document.body, {
     childList: true,
     subtree: true
 });
+const originalXHR = window.XMLHttpRequest;
 
-checkForElements();
+addEventListener("load", (event) => { 
+    processedElements.clear();
+    checkForElements();
+})
+// Initial check
+setInterval(checkForElements, 500);

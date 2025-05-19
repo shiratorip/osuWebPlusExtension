@@ -46,11 +46,12 @@ function checkForElements() {
 
  //get beatmap id
         const titleElement = score.querySelector(".play-detail__title.u-ellipsis-overflow");
-        const bId = titleElement ? titleElement.getAttribute('href').match(/beatmapsets\/(\d+)/)[1] : 'error fetching id';
+        const beatmapsetId = titleElement ? titleElement.getAttribute('href').match(/beatmapsets\/(\d+)/)[1] : 'error fetching id';
+        const beatmapId = titleElement ? titleElement.getAttribute('href').match(/beatmapsets\/\d+#\w+\/(\d+)/)[1] : 'error fetching id';
 //add main container(for player+score data)
         const playercontainer = document.createElement('div');
         playercontainer.className = 'beatmapset-panel beatmapset-panel--size-normal js-audio--player';
-        playercontainer.setAttribute('data-audio-url', "//b.ppy.sh/preview/"+bId+".mp3");
+        playercontainer.setAttribute('data-audio-url', "//b.ppy.sh/preview/"+beatmapsetId+".mp3");
         playercontainer.style = `
             --beatmaps-popup-transition-duration: 150ms;
             --duration: '0:10';
@@ -83,7 +84,7 @@ function checkForElements() {
             top: 0;            
         `;
         beatmapset_panel_cover_container.className = 'beatmapset-panel__cover-container';
-        beatmapset_panel_cover_container.href = "https://osu.ppy.sh/beatmapsets/"+bId;
+        beatmapset_panel_cover_container.href = "https://osu.ppy.sh/beatmapsets/"+beatmapsetId;
 
         const score_data_wrapper = document.createElement('div');
 
@@ -99,11 +100,12 @@ function checkForElements() {
                     const score_detail = group.querySelector('.play-detail__score-detail--score'); 
                     if (score_detail) {
                         const download_link = document.createElement('a');
-                        download_link.href = `https://osu.ppy.sh/beatmapsets/${bId}/download`;
+                        download_link.href = `https://osu.ppy.sh/beatmapsets/${beatmapsetId}/download`;
+                        console.log(download_link);
                         download_link.addEventListener('click', async (e) => {
-                            e.preventDefault();
+                            e.preventDefault(); 
                             
-                            const testLink = `osu://b/${bId}`;
+                            const testLink = `osu://b/${beatmapId}`;
                             
                             window.location.href = testLink;
                             
@@ -111,7 +113,8 @@ function checkForElements() {
                             
                             if (window.location.href.includes('osu.ppy.sh/home/support')) {
                                 history.back();
-                                window.location.href = `https://osu.ppy.sh/beatmapsets/${bId}/download`;
+                                href = `https://osu.ppy.sh/beatmapsets/${beatmapsetId}/download`;
+                                download_link.download();
                             }
                         });
 
@@ -133,8 +136,8 @@ function checkForElements() {
 
         const beatmapset_cover_background = document.createElement('div');
         beatmapset_cover_background.className = 'beatmapset-cover beatmapset-cover--full'
-        const link = "https://assets.ppy.sh/beatmaps/"+bId+"/covers/list.jpg";
-        const link2 = "https://assets.ppy.sh/beatmaps/"+bId+"/covers/list@2x.jpg";
+        const link = "https://assets.ppy.sh/beatmaps/"+beatmapsetId+"/covers/list.jpg";
+        const link2 = "https://assets.ppy.sh/beatmaps/"+beatmapsetId+"/covers/list@2x.jpg";
         beatmapset_cover_background.style = `--bg: url("${link}"); --bg-2x: url("${link2}");`;
 
         const beatmapset_panel_content = document.createElement('div');

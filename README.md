@@ -25,8 +25,8 @@ right now extension is not available on the Chrome Web Store, but you can instal
 
 ## 📝 Contributing
 
-- Found a bug? [Report it in the issues tab](https://github.com/YourUsername/osuWebPlus/issues)
-- Have a feature idea? [Submit it in the issues tab](https://github.com/YourUsername/osuWebPlus/issues)
+- Found a bug? [Report it in the issues tab](https://github.com/shiratorip/osuWebPlusExtension/issues)
+- Have a feature idea? [Submit it in the issues tab](https://github.com/shiratorip/osuWebPlusExtension/issues)
 - Want to contribute? Fork the repository and submit a pull request!
 
 ## ⚖️ Terms of Service

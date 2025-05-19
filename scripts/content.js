@@ -1,5 +1,10 @@
-// Keep track of processed elements
-const processedElements = new Set();
+
+addEventListener("load", (event) => {
+    console.log(event)
+    });
+  
+  // Keep track of processed elements
+  const processedElements = new Set();
 
 // Add a style element for media queries
 const styleElement = document.createElement('style');
@@ -26,8 +31,8 @@ styleElement.textContent = `
             background-color: var(--background-extra-dark);
         }
         .play-detail--pin-sortable .beatmapset-panel__play-container {
-            margin-left: 20px;
-            width: 70px;
+            margin-left: 19px;
+            width: 72px;
         }
 `;
 
@@ -82,7 +87,6 @@ function checkForElements() {
             pointer-events: var(--global-beatmap-link-pointer-events);
             position: relative;
             top: 0;            
-            width: calc(100%-20px);
         `;
         beatmapset_panel_cover_container.className = 'beatmapset-panel__cover-container';
         beatmapset_panel_cover_container.href = "https://osu.ppy.sh/beatmapsets/"+bId;
@@ -191,4 +195,9 @@ observer.observe(document.body, {
     subtree: true
 });
 
-checkForElements();
+addEventListener("load", (event) => { 
+    processedElements.clear();
+    checkForElements();
+})
+// Initial check
+setInterval(checkForElements, 500);

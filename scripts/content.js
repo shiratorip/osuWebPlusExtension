@@ -1,10 +1,4 @@
-
-addEventListener("load", (event) => {
-    console.log(event)
-    });
-  
-  // Keep track of processed elements
-  const processedElements = new Set();
+const processedElements = new Set();
 
 // Add a style element for media queries
 const styleElement = document.createElement('style');
@@ -94,16 +88,43 @@ function checkForElements() {
         const score_data_wrapper = document.createElement('div');
 
         score_data_wrapper.className = 'score-data-wrapper';
-        
-        while(group.firstChild){
+        Array.from(group.children).forEach((child) => {
             if(group.firstChild.className == 'js-score-pin-sortable-handle hidden-xs sortable-handle sortable-handle--score-pin ui-sortable-handle' ||
-            group.firstChild.className == 'js-score-pin-sortable-handle hidden-xs sortable-handle sortable-handle--score-pin'
-            ){
-                playercontainer.appendChild(group.firstChild);
-                continue;
-            }
+                group.firstChild.className == 'js-score-pin-sortable-handle hidden-xs sortable-handle sortable-handle--score-pin'
+                ){
+                    playercontainer.appendChild(group.firstChild);
+                    return;
+                }
+                if(group.firstChild.className == 'play-detail__group play-detail__group--bottom'){
+                    const score_detail = group.querySelector('.play-detail__score-detail--score'); 
+                    if (score_detail) {
+                        const download_link = document.createElement('a');
+                        download_link.href = `https://osu.ppy.sh/beatmapsets/${bId}/download`;
+                        download_link.addEventListener('click', async (e) => {
+                            e.preventDefault();
+                            
+                            const testLink = `osu://b/${bId}`;
+                            
+                            window.location.href = testLink;
+                            
+                            await new Promise(resolve => setTimeout(resolve, 100));
+                            
+                            if (window.location.href.includes('osu.ppy.sh/home/support')) {
+                                history.back();
+                                window.location.href = `https://osu.ppy.sh/beatmapsets/${bId}/download`;
+                            }
+                        });
+
+                        const download_span = document.createElement('span');
+                        download_span.className = 'fas fa-download';
+                        download_link.appendChild(download_span);
+                    }
+                }
             score_data_wrapper.appendChild(group.firstChild);
-        }
+            }
+        );
+
+        
 
     
         const beatmapset_panel_cover_col_play = document.createElement('div');

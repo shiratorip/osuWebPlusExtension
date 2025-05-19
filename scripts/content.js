@@ -118,6 +118,7 @@ function checkForElements() {
                         const download_span = document.createElement('span');
                         download_span.className = 'fas fa-download';
                         download_link.appendChild(download_span);
+                        score_detail.appendChild(download_link);
                     }
                 }
             score_data_wrapper.appendChild(group.firstChild);

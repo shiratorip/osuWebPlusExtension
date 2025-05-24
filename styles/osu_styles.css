@@ -1,0 +1,72 @@
+:root {
+    --play-width: 80px;
+    --background-extra-dark: rgba(0, 0, 0, 0.5);
+    --beatmaps-popup-transition-duration: 150ms;
+}
+
+@media screen and (min-width: 900px) {
+    .play-detail.play-detail--highlightable {
+        max-height: 60px !important;
+    }
+}
+
+.score-data-wrapper {
+    border-radius: 9px !important;
+    flex: 1 !important;
+    margin-right: 10px !important;
+    padding-left: 10px !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    height: 100% !important;
+    position: absolute !important;
+    right: 0 !important;
+    top: 0 !important;
+    width: calc(100% - var(--play-width)) !important;
+    transition: all 120ms ease-in-out !important;
+    background-color: hsla(0,0%,0%,0)!important;
+}
+
+.play-detail--pin-sortable .beatmapset-panel__play-container {
+    margin-left: 20px !important;
+    width: 70px !important;
+    
+}
+
+.beatmapset-panel {
+    width: 100% !important;
+    position: relative !important;
+    display: flex !important;
+    flex-direction: row !important;
+    transition: all 120ms ease-in-out !important;
+    height: 100% !important;
+    background-color: hsla(0,0%,0%,0) !important;
+}
+
+.beatmapset-panel__cover-container {
+    display: flex !important;
+    height: 100% !important;
+    left: 0 !important;
+    pointer-events: var(--global-beatmap-link-pointer-events) !important;
+    position: relative !important;
+    top: 0 !important;
+    
+}
+
+.beatmapset-panel__content {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: left !important;
+    position: absolute !important;
+    z-index: 2 !important;
+    height: 100% !important;
+    width: 100% !important;
+
+}
+
+.beatmapset-panel__play-container {
+    height: 100% !important;
+}
+
+.play-detail.play-detail--highlightable {
+    height: 80px !important;
+}

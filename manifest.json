@@ -1,10 +1,9 @@
 {
-  "name": "Osu score preview play",
-  "description": "Add preview play button to osu scores on your page",
+  "name": "osuWebPlus",
+  "description": "Add QoL features for osu! website.",
   "version": "1.0",
   "manifest_version": 3,
   "author": "shiratorip",
-  "author_email": "shiratorip.contact@gmail.com",
   "icons": {
     "16": "images/icon-16.png",
     "32": "images/icon-32.png",
@@ -20,7 +19,14 @@
       "js": [
         "scripts/content.js"
       ],
+      "css": [
+        "styles/osu_styles.css"
+      ],
       "run_at": "document_idle"
     }
-  ]
+  ],
+  "web_accessible_resources": [{
+    "resources": ["styles/*"],
+    "matches": ["*://*.ppy.sh/*"]
+  }]
 }

@@ -1,35 +1,5 @@
 const processedElements = new Set();
 
-// Add a style element for media queries
-const styleElement = document.createElement('style');
-document.head.appendChild(styleElement);
-styleElement.textContent = `
-    @media screen and (min-width: 900px) {
-        .play-detail.play-detail--highlightable {
-            max-height: 60px;
-        }
-    }
-        .score-data-wrapper{
-            border-radius: 9px;
-            flex: 1;
-            margin-right: 10px;
-            padding-left: 10px;
-            display: flex;
-            justify-content: space-between;
-            height: 100%;
-            position: absolute;
-            right: 0;
-            top: 0;
-            width: calc(100% - var(--play-width));
-            transition: all 120ms ease-in-out;
-            background-color: var(--background-extra-dark);
-        }
-        .play-detail--pin-sortable .beatmapset-panel__play-container {
-            margin-left: 19px;
-            width: 72px;
-        }
-`;
-
 function checkForElements() {
     const scores = document.getElementsByClassName('play-detail__detail');
     Array.from(scores).forEach(score => {
@@ -39,56 +9,27 @@ function checkForElements() {
         }
         const group = score.closest('.play-detail.play-detail--highlightable');
 
-        group.style.height = '80px';
-        group.style = `
-            height:80px;
-        `;
-
- //get beatmap id
+        //get beatmap id
         const titleElement = score.querySelector(".play-detail__title.u-ellipsis-overflow");
         const beatmapsetId = titleElement ? titleElement.getAttribute('href').match(/beatmapsets\/(\d+)/)[1] : 'error fetching id';
         const beatmapId = titleElement ? titleElement.getAttribute('href').match(/beatmapsets\/\d+#\w+\/(\d+)/)[1] : 'error fetching id';
-//add main container(for player+score data)
+
+        //add main container(for player+score data)
         const playercontainer = document.createElement('div');
         playercontainer.className = 'beatmapset-panel beatmapset-panel--size-normal js-audio--player';
         playercontainer.setAttribute('data-audio-url', "//b.ppy.sh/preview/"+beatmapsetId+".mp3");
-        playercontainer.style = `
-            --beatmaps-popup-transition-duration: 150ms;
-            --duration: '0:10';
-            --current-time: '0:00';
-            --progress: 0;
-            width: 100%;
-            position: relative;
-            display: flex;
-            flex-direction: row;
-            transition: all 120ms ease-in-out;
-            height:100%;
-            background-color: hsla(0,0%,0%,0);
-        `;
         playercontainer.setAttribute('data-audio-has-duration', 1);
         playercontainer.setAttribute('data-audio-state', "paused");
         playercontainer.setAttribute('data-audio-time-format', "minute_minimal");
         playercontainer.setAttribute('data-audio-over50', 0);
 
-
-        
-
         const beatmapset_panel_cover_container = document.createElement('a');
-        beatmapset_panel_cover_container.style= 
-        `
-            display: flex;
-            height: 100%;
-            left: 0;
-            pointer-events: var(--global-beatmap-link-pointer-events);
-            position: relative;
-            top: 0;            
-        `;
         beatmapset_panel_cover_container.className = 'beatmapset-panel__cover-container';
         beatmapset_panel_cover_container.href = "https://osu.ppy.sh/beatmapsets/"+beatmapsetId;
 
         const score_data_wrapper = document.createElement('div');
-
         score_data_wrapper.className = 'score-data-wrapper';
+
         Array.from(group.children).forEach((child) => {
             if(group.firstChild.className == 'js-score-pin-sortable-handle hidden-xs sortable-handle sortable-handle--score-pin ui-sortable-handle' ||
                 group.firstChild.className == 'js-score-pin-sortable-handle hidden-xs sortable-handle sortable-handle--score-pin'
@@ -142,19 +83,10 @@ function checkForElements() {
 
         const beatmapset_panel_content = document.createElement('div');
         beatmapset_panel_content.className = 'beatmapset-panel__content';
-        beatmapset_panel_content.style = `
-            display: flex;
-            flex-direction: column;
-            justify-content: left;
-            position: absolute;
-            z-index: 2;
-            height: 100%;
-            width: 100%;
-        `;
+
         const beatmapset_panel_play_container = document.createElement('div');
         beatmapset_panel_play_container.className = 'beatmapset-panel__play-container';
-        beatmapset_panel_play_container.style.height="100%";
-        
+
         const beatmapset_panel_play = document.createElement('button');
         beatmapset_panel_play.className = 'beatmapset-panel__play js-audio--play';
         beatmapset_panel_play.type = 'button';
@@ -224,5 +156,6 @@ addEventListener("load", (event) => {
     processedElements.clear();
     checkForElements();
 })
+
 // Initial check
 setInterval(checkForElements, 500);

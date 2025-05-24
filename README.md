@@ -12,6 +12,7 @@ A Chrome extension that adds some QoL features to osu! website.
 Extension is available on the Chrome Web Store(but updates will be slower there):
 https://chromewebstore.google.com/detail/osuwebplus/dlbbdjjjfciknpecgfplgpnfniampdph?authuser=0&hl=en
 
+If you want to download code from the source:
 1. Download the source code
 2. Go to extension tab in your browser
 3. Enable developer mode

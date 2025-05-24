@@ -157,5 +157,12 @@ addEventListener("load", (event) => {
     checkForElements();
 })
 
-// Initial check
+//Check interval every 500ms 
 setInterval(checkForElements, 500);
+
+// Load settings at the start
+chrome.storage.sync.get(['minimalistic_mode'], (result) => {
+    if (result.minimalistic_mode) {
+        document.body.classList.add('minimalistic-mode');
+    }
+});

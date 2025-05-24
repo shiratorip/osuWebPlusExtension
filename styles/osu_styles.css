@@ -7,69 +7,76 @@
 
 @media screen and (min-width: 900px) {
     .play-detail.play-detail--highlightable {
-        max-height: var(--score-max-height) !important;
+        max-height: var(--score-max-height) ;
     }
 }
 
-.score-data-wrapper {
-    border-radius: 9px !important;
-    flex: 1 !important;
-    margin-right: 10px !important;
-    padding-left: 10px !important;
-    display: flex !important;
-    justify-content: space-between !important;
-    height: 100% !important;
-    position: absolute !important;
-    right: 0 !important;
-    top: 0 !important;
-    width: calc(100% - var(--play-width)) !important;
-    transition: all 120ms ease-in-out !important;
-    background-color: hsla(0,0%,0%,0)!important;
+.osuWebPlus-class .score-data-wrapper {
+    border-radius: 9px ;
+    flex: 1 ;
+    margin-right: 10px ;
+    padding-left: 10px ;
+    display: flex ;
+    justify-content: space-between ;
+    height: 100% ;
+    position: absolute ;
+    right: 0 ;
+    top: 0 ;
+    width: calc(100% - var(--play-width)) ;
+    transition: all 120ms ease-in-out ;
+    background-color: hsla(0,0%,0%,0);
 }
 
-.play-detail--pin-sortable .beatmapset-panel__play-container {
-    margin-left: 20px !important;
-    width: 70px !important;
-    background-color: hsla(0,0%,0%,0)!important;
+.osuWebPlus-class.play-detail--pin-sortable .beatmapset-panel__play-container {
+    margin-left: 15px;
+    background-color: hsla(0,0%,0%,0);
 }
 
-.beatmapset-panel {
-    width: 100% !important;
-    position: relative !important;
-    display: flex !important;
-    flex-direction: row !important;
-    transition: all 120ms ease-in-out !important;
-    height: 100% !important;
-    background-color: hsla(0, 0%, 0%, 0) !important;
+.osuWebPlus-class .beatmapset-panel {
+    width: 100% ;
+    position: relative ;
+    display: flex ;
+    flex-direction: row ;
+    transition: all 120ms ease-in-out ;
+    height: 100% ;
+    background-color: hsla(0, 0%, 0%, 0) ;
 }
 
-.beatmapset-panel__cover-container {
-    display: flex !important;
-    height: 100% !important;
-    left: 0 !important;
-    pointer-events: var(--global-beatmap-link-pointer-events) !important;
-    position: relative !important;
-    top: 0 !important;
-    transition: all 120ms ease-in-out!important;
-    width: 100%!important;
-    opacity: calc(1 - var(--play-icon-opacity)*0.7)!important;
+.osuWebPlus-class .beatmapset-panel__cover-container {
+    display: flex ;
+    height: 100% ;
+    left: 0 ;
+    pointer-events: var(--global-beatmap-link-pointer-events) ;
+    position: relative ;
+    top: 0 ;
+    transition: all 120ms ease-in-out;
+    width: 100%;
+    opacity: calc(1 - var(--play-icon-opacity)*0.7);
 }
 
-.beatmapset-panel__content {
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: left !important;
-    position: absolute !important;
-    z-index: 2 !important;
-    height: 100% !important;
-    width: 100% !important;
+.osuWebPlus-class .beatmapset-panel__content {
+    display: flex ;
+    flex-direction: column ;
+    justify-content: left ;
+    position: absolute ;
+    z-index: 2 ;
+    height: 100% ;
+    width: 100% ;
 
 }
 
-.beatmapset-panel__play-container {
-    height: 100% !important;
+.osuWebPlus-class .beatmapset-panel__play-container {
+    height: 100% ;
+    background-color: hsla(0,0%,0%,0);
 }
+
+body.minimalistic-mode .play-detail.play-detail--highlightable {
+    --score-max-height: 40px;
+}
+
+
+
 
 .play-detail.play-detail--highlightable {
-    height: 80px !important;
+    height: 80px ;
 }

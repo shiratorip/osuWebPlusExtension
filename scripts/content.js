@@ -8,7 +8,7 @@ function checkForElements() {
             return;
         }
         const group = score.closest('.play-detail.play-detail--highlightable');
-
+        group.classList.add('osuWebPlus-class');
         //get beatmap id
         const titleElement = score.querySelector(".play-detail__title.u-ellipsis-overflow");
         const beatmapsetId = titleElement ? titleElement.getAttribute('href').match(/beatmapsets\/(\d+)/)[1] : 'error fetching id';

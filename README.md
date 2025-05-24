@@ -9,8 +9,10 @@ A Chrome extension that adds some QoL features to osu! website.
 - Beatmapset download button for each score in user profiles
 
 ## 🚀 Installation
-right now extension is not available on the Chrome Web Store, but you can install it manually
+Extension is available on the Chrome Web Store(but updates will be slower there):
+https://chromewebstore.google.com/detail/osuwebplus/dlbbdjjjfciknpecgfplgpnfniampdph?authuser=0&hl=en
 
+If you want to download code from the source:
 1. Download the source code
 2. Go to extension tab in your browser
 3. Enable developer mode

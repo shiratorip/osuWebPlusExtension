@@ -6,24 +6,26 @@
 }
 
 @media screen and (min-width: 900px) {
-    .play-detail.play-detail--highlightable {
-        max-height: var(--score-max-height) ;
+    .play-detail.play-detail--highlightable,
+    .play-detail.play-detail--active {
+        max-height: var(--score-max-height);
     }
 }
 
-.osuWebPlus-class .score-data-wrapper {
-    border-radius: 9px ;
-    flex: 1 ;
-    margin-right: 10px ;
-    padding-left: 10px ;
-    display: flex ;
-    justify-content: space-between ;
-    height: 100% ;
-    position: absolute ;
-    right: 0 ;
-    top: 0 ;
-    width: calc(100% - var(--play-width)) ;
-    transition: all 120ms ease-in-out ;
+.osuWebPlus-class .score-data-wrapper,
+.play-detail--active .score-data-wrapper {
+    border-radius: 9px;
+    flex: 1;
+    margin-right: 10px;
+    padding-left: 10px;
+    display: flex;
+    justify-content: space-between;
+    height: 100%;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: calc(100% - var(--play-width));
+    transition: all 120ms ease-in-out;
     background-color: hsla(0,0%,0%,0);
 }
 
@@ -70,13 +72,12 @@
     background-color: hsla(0,0%,0%,0);
 }
 
-body.minimalistic-mode .play-detail.play-detail--highlightable {
+body.minimalistic-mode .play-detail.play-detail--highlightable,
+body.minimalistic-mode .play-detail.play-detail--active {
     --score-max-height: 40px;
 }
 
-
-
-
-.play-detail.play-detail--highlightable {
-    height: 80px ;
+.play-detail.play-detail--highlightable,
+.play-detail.play-detail--active {
+    height: 80px;
 }

@@ -5,10 +5,17 @@ function checkForElements() {
     Array.from(scores).forEach(score => {
         // Skip if we've already processed this element
         if (processedElements.has(score)) {
+            // Ensure the class stays even after processing
+            const group = score.closest('.play-detail.play-detail--highlightable, .play-detail.play-detail--active');
+            if (group && !group.classList.contains('osuWebPlus-class')) {
+                group.classList.add('osuWebPlus-class');
+            }
             return;
         }
-        const group = score.closest('.play-detail.play-detail--highlightable');
-        group.classList.add('osuWebPlus-class');
+        const group = score.closest('.play-detail.play-detail--highlightable, .play-detail.play-detail--active');
+        if (group) {
+            group.classList.add('osuWebPlus-class');
+        }
         //get beatmap id
         const titleElement = score.querySelector(".play-detail__title.u-ellipsis-overflow");
         const beatmapsetId = titleElement ? titleElement.getAttribute('href').match(/beatmapsets\/(\d+)/)[1] : 'error fetching id';

@@ -19,11 +19,15 @@ document.addEventListener('DOMContentLoaded', () => {
             minimalistic_mode: document.querySelector('#minimalistic_mode').checked
         };
 
-        // Save settings
         chrome.storage.sync.set(settings, () => {
-            chrome.tabs.reload();
-
-            window.close();
+            const button = document.querySelector('#submit');
+            const originalText = button.textContent;
+            button.textContent = 'Saved!';
+            button.style.backgroundColor = '#28a745';
+            
+            setTimeout(() => {
+                window.close();
+            }, 500);
         });
     });
 });

@@ -72,9 +72,38 @@
     background-color: hsla(0,0%,0%,0);
 }
 
+.osuWebPlus-counter {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #333;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: bold;
+    z-index: 10;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.osuWebPlus-counter.left {
+    left: 5px;
+    right: auto;
+}
+
+.osuWebPlus-counter.dark {
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+}
+
 body.minimalistic-mode .play-detail.play-detail--highlightable,
 body.minimalistic-mode .play-detail.play-detail--active {
     --score-max-height: 40px;
+}
+
+body.minimalistic-mode .osuWebPlus-counter {
+    font-size: 10px;
+    padding: 1px 4px;
 }
 
 .play-detail.play-detail--highlightable,

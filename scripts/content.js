@@ -1,9 +1,49 @@
 const processedElements = new Set();
+let scoreCounter = 0;
+let currentUrl = window.location.href;
+let isMinimalisticMode = false;
+
+// Debounce function to prevent excessive calls
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+function isOnUserProfilePage() {
+    return window.location.pathname.match(/^\/users\/\d+/) !== null;
+}
+
+// Detect URL changes (for SPA navigation)
+function detectUrlChange() {
+    const newUrl = window.location.href;
+    if (currentUrl !== newUrl) {
+        console.log('URL changed from', currentUrl, 'to', newUrl);
+        currentUrl = newUrl;
+        
+        resetScoreCounter();
+        applyMinimalisticMode();
+        
+        return true;
+    }
+    return false;
+}
 
 function checkForElements() {
+    // Don't process if not on a user profile page
+    if (!isOnUserProfilePage()) {
+        return;
+    }
+
     const scores = document.getElementsByClassName('play-detail__detail');
     Array.from(scores).forEach(score => {
-        // Skip if we've already processed this element
+
         if (processedElements.has(score)) {
             // Ensure the class stays even after processing
             const group = score.closest('.play-detail.play-detail--highlightable, .play-detail.play-detail--active');
@@ -12,10 +52,8 @@ function checkForElements() {
             }
             return;
         }
+        
         const group = score.closest('.play-detail.play-detail--highlightable, .play-detail.play-detail--active');
-        if (group) {
-            group.classList.add('osuWebPlus-class');
-        }
         //get beatmap id
         const titleElement = score.querySelector(".play-detail__title.u-ellipsis-overflow");
         const beatmapsetId = titleElement ? titleElement.getAttribute('href').match(/beatmapsets\/(\d+)/)[1] : 'error fetching id';
@@ -30,6 +68,36 @@ function checkForElements() {
         playercontainer.setAttribute('data-audio-time-format', "minute_minimal");
         playercontainer.setAttribute('data-audio-over50', 0);
 
+        //add counter
+        if (group) {
+            const bestPerformanceHeader = document.querySelector('body > div.osu-layout__section.osu-layout__section--full > div > div > div > div.osu-page.osu-page--generic-compact > div.user-profile-pages.ui-sortable > div:nth-child(3) > div > div.lazy-load > h3:nth-child(3)');
+            let isInBestPerformance = false;
+            
+            if (bestPerformanceHeader && bestPerformanceHeader.textContent.includes('Best Performance')) {
+                // Find the container that comes after the Best Performance header
+                let currentElement = bestPerformanceHeader.nextElementSibling;
+                while (currentElement) {
+                    if (currentElement.contains(group)) {
+                        isInBestPerformance = true;
+                        break;
+                    }
+                    currentElement = currentElement.nextElementSibling;
+                }
+            }
+            group.classList.add('osuWebPlus-class');
+            if (isInBestPerformance) {
+
+            scoreCounter++;
+            const counterElement = document.createElement('div');
+            counterElement.className = 'osuWebPlus-counter';
+            counterElement.textContent = `#${scoreCounter}`;
+            
+            playercontainer.appendChild(counterElement);
+            }
+        }
+        
+    
+
         const beatmapset_panel_cover_container = document.createElement('a');
         beatmapset_panel_cover_container.className = 'beatmapset-panel__cover-container';
         beatmapset_panel_cover_container.href = "https://osu.ppy.sh/beatmapsets/"+beatmapsetId;
@@ -38,6 +106,11 @@ function checkForElements() {
         score_data_wrapper.className = 'score-data-wrapper';
 
         Array.from(group.children).forEach((child) => {
+            // Skip the counter element we just added
+            if (child.className === 'osuWebPlus-counter') {
+                return;
+            }
+            
             if(group.firstChild.className == 'js-score-pin-sortable-handle hidden-xs sortable-handle sortable-handle--score-pin ui-sortable-handle' ||
                 group.firstChild.className == 'js-score-pin-sortable-handle hidden-xs sortable-handle sortable-handle--score-pin'
                 ){
@@ -49,7 +122,6 @@ function checkForElements() {
                     if (score_detail) {
                         const download_link = document.createElement('a');
                         download_link.href = `https://osu.ppy.sh/beatmapsets/${beatmapsetId}/download`;
-                        console.log(download_link);
                         download_link.addEventListener('click', async (e) => {
                             e.preventDefault(); 
                             
@@ -69,7 +141,7 @@ function checkForElements() {
                         const download_span = document.createElement('span');
                         download_span.className = 'fas fa-download';
                         download_link.appendChild(download_span);
-                        score_detail.appendChild(download_link);
+                        score_detail.appendChild(download_span);
                     }
                 }
             score_data_wrapper.appendChild(group.firstChild);
@@ -87,10 +159,10 @@ function checkForElements() {
         playercontainer.appendChild(score_data_wrapper);
         group.prepend(playercontainer);
 
-
         processedElements.add(score);
     });
 }
+
 function createPlayer(beatmapsetId) {
     const beatmapset_panel_cover_col_play = document.createElement('div');
     beatmapset_panel_cover_col_play.className = 'beatmapset-panel__cover-col beatmapset-panel__cover-col--play';
@@ -154,8 +226,49 @@ function createPlayer(beatmapsetId) {
         content: beatmapset_panel_content
     };
 }
-const observer = new MutationObserver(function(mutations) {
+
+function resetScoreCounter() {
+    scoreCounter = 0;
+    processedElements.clear();
+}
+
+function applyMinimalisticMode() {
+    if (isMinimalisticMode) {
+        document.body.classList.add('minimalistic-mode');
+    } else {
+        document.body.classList.remove('minimalistic-mode');
+    }
+}
+
+// Debounced version of checkForElements to prevent excessive calls
+const debouncedCheckForElements = debounce(() => {
+    detectUrlChange();
     checkForElements();
+}, 200);
+
+const observer = new MutationObserver(function(mutations) {
+    let shouldCheck = false;
+    
+    for (let mutation of mutations) {
+        // Only check if nodes were added that might contain scores
+        if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+            for (let node of mutation.addedNodes) {
+                if (node.nodeType === 1) { 
+                    // Check if the added node or its descendants contain score elements
+                    if (node.classList?.contains('play-detail') || 
+                        node.querySelector?.('.play-detail__detail')) {
+                        shouldCheck = true;
+                        break;
+                    }
+                }
+            }
+        }
+        if (shouldCheck) break;
+    }
+    
+    if (shouldCheck) {
+        debouncedCheckForElements();
+    }
 });
 
 // Start observing the document with the configured parameters
@@ -164,17 +277,36 @@ observer.observe(document.body, {
     subtree: true
 });
 
-addEventListener("load", (event) => { 
-    processedElements.clear();
-    checkForElements();
-})
+// Load settings and initialize
+function initialize() {
+    chrome.storage.sync.get(['minimalistic_mode'], (result) => {
+        isMinimalisticMode = result.minimalistic_mode || false;
+        applyMinimalisticMode();
+        
+        // Initial check
+        setTimeout(() => {
+            resetScoreCounter();
+            checkForElements();
+        }, 500);
+    });
+}
 
-//Check interval every 500ms 
-setInterval(checkForElements, 500);
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initialize);
+} else {
+    initialize();
+}
 
-// Load settings at the start
-chrome.storage.sync.get(['minimalistic_mode'], (result) => {
-    if (result.minimalistic_mode) {
-        document.body.classList.add('minimalistic-mode');
+//interval checks
+setInterval(() => {
+debouncedCheckForElements();
+}, 500);
+
+// Listen for settings changes from popup
+chrome.storage.onChanged.addListener((changes, area) => {
+    if (area === 'sync' && changes.minimalistic_mode) {
+        isMinimalisticMode = changes.minimalistic_mode.newValue;
+        applyMinimalisticMode();
     }
 });

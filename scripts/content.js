@@ -29,7 +29,6 @@ function checkForElements() {
 
     const scores = document.getElementsByClassName('play-detail__detail');
     Array.from(scores).forEach(score => {
-        // Check if this score has already been processed
         if (processedElements.has(score)) {
             const group = score.closest('.play-detail.play-detail--highlightable, .play-detail.play-detail--active');
             if (group && !group.classList.contains('osuWebPlus-class')) {
@@ -217,7 +216,6 @@ function applyMinimalisticMode() {
     }
 }
 
-// Replace debounced observer with direct check
 const observer = new MutationObserver(function(mutations) {
     let shouldCheck = false;
     
@@ -245,6 +243,13 @@ const observer = new MutationObserver(function(mutations) {
 observer.observe(document.body, {
     childList: true,
     subtree: true
+});
+
+chrome.storage.onChanged.addListener((changes, namespace) => {
+    if (namespace === 'sync' && changes.minimalistic_mode) {
+        isMinimalisticMode = changes.minimalistic_mode.newValue;
+        applyMinimalisticMode();
+    }
 });
 
 // Load settings and initialize

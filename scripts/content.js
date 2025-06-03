@@ -3,24 +3,11 @@ let scoreCounter = 0;
 let currentUrl = window.location.href;
 let isMinimalisticMode = false;
 
-// Debounce function to prevent excessive calls
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
-}
 
 function isOnUserProfilePage() {
     return window.location.pathname.match(/^\/users\/\d+/) !== null;
 }
 
-// Detect URL changes (for SPA navigation)
 function detectUrlChange() {
     const newUrl = window.location.href;
     if (currentUrl !== newUrl) {
@@ -36,16 +23,14 @@ function detectUrlChange() {
 }
 
 function checkForElements() {
-    // Don't process if not on a user profile page
     if (!isOnUserProfilePage()) {
         return;
     }
 
     const scores = document.getElementsByClassName('play-detail__detail');
     Array.from(scores).forEach(score => {
-
+        // Check if this score has already been processed
         if (processedElements.has(score)) {
-            // Ensure the class stays even after processing
             const group = score.closest('.play-detail.play-detail--highlightable, .play-detail.play-detail--active');
             if (group && !group.classList.contains('osuWebPlus-class')) {
                 group.classList.add('osuWebPlus-class');
@@ -54,6 +39,13 @@ function checkForElements() {
         }
         
         const group = score.closest('.play-detail.play-detail--highlightable, .play-detail.play-detail--active');
+        
+        // Check if the group already has a player container
+        if (group.querySelector('.beatmapset-panel')) {
+            processedElements.add(score);
+            return;
+        }
+
         //get beatmap id
         const titleElement = score.querySelector(".play-detail__title.u-ellipsis-overflow");
         const beatmapsetId = titleElement ? titleElement.getAttribute('href').match(/beatmapsets\/(\d+)/)[1] : 'error fetching id';
@@ -70,6 +62,7 @@ function checkForElements() {
 
         //add counter
         if (group) {
+            group.classList.add('osuWebPlus-class');
             const bestPerformanceHeader = document.querySelector('body > div.osu-layout__section.osu-layout__section--full > div > div > div > div.osu-page.osu-page--generic-compact > div.user-profile-pages.ui-sortable > div:nth-child(3) > div > div.lazy-load > h3:nth-child(3)');
             let isInBestPerformance = false;
             
@@ -84,7 +77,6 @@ function checkForElements() {
                     currentElement = currentElement.nextElementSibling;
                 }
             }
-            group.classList.add('osuWebPlus-class');
             if (isInBestPerformance) {
 
             scoreCounter++;
@@ -122,26 +114,11 @@ function checkForElements() {
                     if (score_detail) {
                         const download_link = document.createElement('a');
                         download_link.href = `https://osu.ppy.sh/beatmapsets/${beatmapsetId}/download`;
-                        download_link.addEventListener('click', async (e) => {
-                            e.preventDefault(); 
-                            
-                            const testLink = `osu://b/${beatmapId}`;
-                            
-                            window.location.href = testLink;
-                            
-                            await new Promise(resolve => setTimeout(resolve, 100));
-                            
-                            if (window.location.href.includes('osu.ppy.sh/home/support')) {
-                                history.back();
-                                href = `https://osu.ppy.sh/beatmapsets/${beatmapsetId}/download`;
-                                download_link.download();
-                            }
-                        });
-
+                        
                         const download_span = document.createElement('span');
                         download_span.className = 'fas fa-download';
                         download_link.appendChild(download_span);
-                        score_detail.appendChild(download_span);
+                        score_detail.appendChild(download_link);
                     }
                 }
             score_data_wrapper.appendChild(group.firstChild);
@@ -240,26 +217,18 @@ function applyMinimalisticMode() {
     }
 }
 
-// Debounced version of checkForElements to prevent excessive calls
-const debouncedCheckForElements = debounce(() => {
-    detectUrlChange();
-    checkForElements();
-}, 200);
-
+// Replace debounced observer with direct check
 const observer = new MutationObserver(function(mutations) {
     let shouldCheck = false;
     
     for (let mutation of mutations) {
-        // Only check if nodes were added that might contain scores
         if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
             for (let node of mutation.addedNodes) {
-                if (node.nodeType === 1) { 
-                    // Check if the added node or its descendants contain score elements
-                    if (node.classList?.contains('play-detail') || 
-                        node.querySelector?.('.play-detail__detail')) {
-                        shouldCheck = true;
-                        break;
-                    }
+                if (node.nodeType === 1 && 
+                    (node.classList?.contains('play-detail') || 
+                    node.querySelector?.('.play-detail__detail'))) {
+                    shouldCheck = true;
+                    break;
                 }
             }
         }
@@ -267,7 +236,8 @@ const observer = new MutationObserver(function(mutations) {
     }
     
     if (shouldCheck) {
-        debouncedCheckForElements();
+        detectUrlChange();
+        checkForElements();
     }
 });
 
@@ -300,13 +270,6 @@ if (document.readyState === 'loading') {
 
 //interval checks
 setInterval(() => {
-debouncedCheckForElements();
-}, 500);
-
-// Listen for settings changes from popup
-chrome.storage.onChanged.addListener((changes, area) => {
-    if (area === 'sync' && changes.minimalistic_mode) {
-        isMinimalisticMode = changes.minimalistic_mode.newValue;
-        applyMinimalisticMode();
-    }
-});
+    detectUrlChange();
+    checkForElements();
+}, 500); // Increased interval to reduce unnecessary checks

@@ -272,4 +272,4 @@ if (document.readyState === 'loading') {
 setInterval(() => {
     detectUrlChange();
     checkForElements();
-}, 500); // Increased interval to reduce unnecessary checks
+}, 500); 

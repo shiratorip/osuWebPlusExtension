@@ -11,7 +11,6 @@ function isOnUserProfilePage() {
 function detectUrlChange() {
     const newUrl = window.location.href;
     if (currentUrl !== newUrl) {
-        console.log('URL changed from', currentUrl, 'to', newUrl);
         currentUrl = newUrl;
         
         resetScoreCounter();
@@ -21,14 +20,34 @@ function detectUrlChange() {
     }
     return false;
 }
+function findBestPerformanceSection() {
+    // Find any h3 that contains 'Best Performance'
+    const headers = Array.from(document.querySelectorAll('h3'));
+    for (const header of headers) {
+        if (header.textContent.trim().toLowerCase().includes('best performance')) {
+            // Usually the container with scores is the next sibling
+            let section = header.nextElementSibling;
+            // Defensive: fallback to parent if needed
+            if (section && section.querySelector('.play-detail__detail')) return section;
+            if (header.parentElement && header.parentElement.querySelector('.play-detail__detail')) return header.parentElement;
+        }
+    }
+    return null;
+}
 
 function checkForElements() {
-    if (!isOnUserProfilePage()) {
-        return;
-    }
+    if (!isOnUserProfilePage()) return;
 
-    const scores = document.getElementsByClassName('play-detail__detail');
-    Array.from(scores).forEach(score => {
+    // Find Best Performance section for this check
+    const bestPerformanceSection = findBestPerformanceSection();
+    // Track scores in Best Performance for counters
+    let bestScores = bestPerformanceSection ? Array.from(bestPerformanceSection.querySelectorAll('.play-detail__detail')) : [];
+
+    // Process all scores everywhere
+    const scores = document.querySelectorAll('.play-detail__detail');
+
+    scores.forEach(score => {
+        // Only process each score once
         if (processedElements.has(score)) {
             const group = score.closest('.play-detail.play-detail--highlightable, .play-detail.play-detail--active');
             if (group && !group.classList.contains('osuWebPlus-class')) {
@@ -36,108 +55,86 @@ function checkForElements() {
             }
             return;
         }
-        
+
         const group = score.closest('.play-detail.play-detail--highlightable, .play-detail.play-detail--active');
-        
-        // Check if the group already has a player container
+        if (!group) return;
+
+        // Check if already has a player container
         if (group.querySelector('.beatmapset-panel')) {
             processedElements.add(score);
             return;
         }
 
-        //get beatmap id
+        // Get beatmap ids
         const titleElement = score.querySelector(".play-detail__title.u-ellipsis-overflow");
-        const beatmapsetId = titleElement ? titleElement.getAttribute('href').match(/beatmapsets\/(\d+)/)[1] : 'error fetching id';
-        const beatmapId = titleElement ? titleElement.getAttribute('href').match(/beatmapsets\/\d+#\w+\/(\d+)/)[1] : 'error fetching id';
+        const beatmapsetId = titleElement ? (titleElement.getAttribute('href').match(/beatmapsets\/(\d+)/) || [])[1] : 'error fetching id';
+        const beatmapId = titleElement ? (titleElement.getAttribute('href').match(/beatmapsets\/\d+#\w+\/(\d+)/) || [])[1] : 'error fetching id';
 
-        //add main container(for player+score data)
+        // Main container for player+score data
         const playercontainer = document.createElement('div');
         playercontainer.className = 'beatmapset-panel beatmapset-panel--size-normal js-audio--player';
-        playercontainer.setAttribute('data-audio-url', "//b.ppy.sh/preview/"+beatmapsetId+".mp3");
+        playercontainer.setAttribute('data-audio-url', "//b.ppy.sh/preview/" + beatmapsetId + ".mp3");
         playercontainer.setAttribute('data-audio-has-duration', 1);
         playercontainer.setAttribute('data-audio-state', "paused");
         playercontainer.setAttribute('data-audio-time-format', "minute_minimal");
         playercontainer.setAttribute('data-audio-over50', 0);
 
-        //add counter
-        if (group) {
-            group.classList.add('osuWebPlus-class');
-            const bestPerformanceHeader = document.querySelector('body > div.osu-layout__section.osu-layout__section--full > div > div > div > div.osu-page.osu-page--generic-compact > div.user-profile-pages.ui-sortable > div:nth-child(3) > div > div.lazy-load > h3:nth-child(3)');
-            let isInBestPerformance = false;
-            
-            if (bestPerformanceHeader && bestPerformanceHeader.textContent.includes('Best Performance')) {
-                // Find the container that comes after the Best Performance header
-                let currentElement = bestPerformanceHeader.nextElementSibling;
-                while (currentElement) {
-                    if (currentElement.contains(group)) {
-                        isInBestPerformance = true;
-                        break;
-                    }
-                    currentElement = currentElement.nextElementSibling;
-                }
-            }
-            if (isInBestPerformance) {
-
+        // Counter only if in BestScores array we inflated in the beginning
+        if (bestScores.includes(score)) {
             scoreCounter++;
             const counterElement = document.createElement('div');
             counterElement.className = 'osuWebPlus-counter';
             counterElement.textContent = `#${scoreCounter}`;
-            
             playercontainer.appendChild(counterElement);
-            }
         }
-        
-    
 
+        // Beatmap cover and content (your logic, unchanged)
         const beatmapset_panel_cover_container = document.createElement('a');
         beatmapset_panel_cover_container.className = 'beatmapset-panel__cover-container';
-        beatmapset_panel_cover_container.href = "https://osu.ppy.sh/beatmapsets/"+beatmapsetId;
+        beatmapset_panel_cover_container.href = "https://osu.ppy.sh/beatmapsets/" + beatmapsetId;
 
         const score_data_wrapper = document.createElement('div');
         score_data_wrapper.className = 'score-data-wrapper';
 
         Array.from(group.children).forEach((child) => {
-            // Skip the counter element we just added
-            if (child.className === 'osuWebPlus-counter') {
+            if (child.className === 'osuWebPlus-counter') return;
+            if (group.firstChild.className == 'js-score-pin-sortable-handle hidden-xs sortable-handle sortable-handle--score-pin ui-sortable-handle' ||
+                group.firstChild.className == 'js-score-pin-sortable-handle hidden-xs sortable-handle sortable-handle--score-pin'
+            ) {
+                playercontainer.appendChild(group.firstChild);
                 return;
             }
-            
-            if(group.firstChild.className == 'js-score-pin-sortable-handle hidden-xs sortable-handle sortable-handle--score-pin ui-sortable-handle' ||
-                group.firstChild.className == 'js-score-pin-sortable-handle hidden-xs sortable-handle sortable-handle--score-pin'
-                ){
-                    playercontainer.appendChild(group.firstChild);
-                    return;
+            if (group.firstChild.className == 'play-detail__group play-detail__group--bottom') {
+                const score_detail = group.querySelector('.play-detail__score-detail--score');
+                if (score_detail) {
+                    const download_link = document.createElement('a');
+                    download_link.href = `https://osu.ppy.sh/beatmapsets/${beatmapsetId}/download`;
+                    const download_span = document.createElement('span');
+                    download_span.className = 'fas fa-download';
+                    download_link.appendChild(download_span);
+                    score_detail.appendChild(download_link);
                 }
-                if(group.firstChild.className == 'play-detail__group play-detail__group--bottom'){
-                    const score_detail = group.querySelector('.play-detail__score-detail--score'); 
-                    if (score_detail) {
-                        const download_link = document.createElement('a');
-                        download_link.href = `https://osu.ppy.sh/beatmapsets/${beatmapsetId}/download`;
-                        
-                        const download_span = document.createElement('span');
-                        download_span.className = 'fas fa-download';
-                        download_link.appendChild(download_span);
-                        score_detail.appendChild(download_link);
-                    }
-                }
-            score_data_wrapper.appendChild(group.firstChild);
             }
-        );
+            score_data_wrapper.appendChild(group.firstChild);
+        });
 
+        // Player
         const player = createPlayer(beatmapsetId);
-
         const beatmapset_panel_cover_col_play = player.coverColPlay;
-
         beatmapset_panel_cover_col_play.appendChild(player.coverBackground);
         beatmapset_panel_cover_container.appendChild(beatmapset_panel_cover_col_play);
         playercontainer.appendChild(beatmapset_panel_cover_container);
         playercontainer.appendChild(player.content);
         playercontainer.appendChild(score_data_wrapper);
+
         group.prepend(playercontainer);
 
+        group.classList.add('osuWebPlus-class');
         processedElements.add(score);
     });
 }
+
+
 
 function createPlayer(beatmapsetId) {
     const beatmapset_panel_cover_col_play = document.createElement('div');
@@ -273,7 +270,7 @@ if (document.readyState === 'loading') {
     initialize();
 }
 
-//interval checks
+// interval checks
 setInterval(() => {
     detectUrlChange();
     checkForElements();

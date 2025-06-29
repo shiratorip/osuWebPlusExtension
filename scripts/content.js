@@ -3,6 +3,11 @@ let scoreCounter = 0;
 let currentUrl = window.location.href;
 let isMinimalisticMode = false;
 
+let bpLocalization = {};
+fetch(chrome.runtime.getURL('owp-localization.json'))
+    .then(resp => resp.json())
+    .then(json => { bpLocalization = json.best_performance; })
+    .catch(() => { bpLocalization = {en: "Best Performance"}; });
 
 function isOnUserProfilePage() {
     return window.location.pathname.match(/^\/users\/\d+/) !== null;
@@ -23,9 +28,14 @@ function detectUrlChange() {
 function findBestPerformanceSection() {
     // Find any h3 that contains 'Best Performance'
     const headers = Array.from(document.querySelectorAll('h3'));
+    // get the language from the document or default to 'en'
+    const language = document.documentElement.lang || 'en';
+    let bestPerformanceText = (bpLocalization && bpLocalization[language]) 
+        ? bpLocalization[language].toLowerCase()
+        : bpLocalization["en"].toLowerCase();
+
     for (const header of headers) {
-        if (header.textContent.trim().toLowerCase().includes('best performance')) {
-            // Usually the container with scores is the next sibling
+        if (header.textContent.trim().toLowerCase().includes(bestPerformanceText)) {
             let section = header.nextElementSibling;
             // Defensive: fallback to parent if needed
             if (section && section.querySelector('.play-detail__detail')) return section;

@@ -52,6 +52,7 @@ function checkForElements() {
             const group = score.closest('.play-detail.play-detail--highlightable, .play-detail.play-detail--active');
             if (group && !group.classList.contains('osuWebPlus-class')) {
                 group.classList.add('osuWebPlus-class');
+                observeClassChanges(group);
             }
             return;
         }
@@ -129,7 +130,12 @@ function checkForElements() {
 
         group.prepend(playercontainer);
 
+        // adding osuWebPlus-class to group and adding observer
+        // observer reacts to when the class changes
         group.classList.add('osuWebPlus-class');
+        observeClassChanges(group);
+        
+
         processedElements.add(score);
     });
 }
@@ -242,12 +248,35 @@ observer.observe(document.body, {
     subtree: true
 });
 
+// Observe class changes on the group element
+// This function ensures that the osuWebPlus-class is always present
+function observeClassChanges(group) {
+    // Avoid double-observing
+    if (group._osuWebPlus_observed) return;
+    group._osuWebPlus_observed = true;
+
+    const observer = new MutationObserver(mutations => {
+        for (const mutation of mutations) {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                // re-add osuWebPlus-class if it was removed
+                if (!group.classList.contains('osuWebPlus-class')) {
+                    group.classList.add('osuWebPlus-class');
+                }
+            }
+        }
+    });
+
+    observer.observe(group, { attributes: true, attributeFilter: ['class'] });
+}
+
+
 chrome.storage.onChanged.addListener((changes, namespace) => {
     if (namespace === 'sync' && changes.minimalistic_mode) {
         isMinimalisticMode = changes.minimalistic_mode.newValue;
         applyMinimalisticMode();
     }
 });
+
 
 // Load settings and initialize
 function initialize() {
